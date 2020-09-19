@@ -20,7 +20,6 @@ private:
 	std::map<EventKeyboard::KeyCode, bool> keyMap;
 	float speed=0;
 	float maxMoveSpeed = 3;
-	Vector<Sprite*> starsVector;
 	Sprite* star;
 	int score = 0;
 	Label* scoreLabel;

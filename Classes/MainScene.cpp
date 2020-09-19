@@ -25,10 +25,10 @@ bool MainScene::init()
 	player->setPosition(Vec2(size.width / 2, 256));
 	this->addChild(player);
 	//add score Label
-	std::string scoreString = "Score: ";
+	std::string scoreString = "Score:";
 	scoreString.append(std::to_string(score));
-	scoreLabel = Label::createWithBMFont("mikado_outline_shadow.fnt",scoreString);
-	scoreLabel->setPosition(Vec2(size.width/2,size.height/2+200));
+	scoreLabel = Label::createWithBMFont("mikado_outline_shadow.fnt", scoreString);
+	scoreLabel->setPosition(Vec2(size.width / 2, size.height / 2 + 200));
 	this->addChild(scoreLabel);
 	//init the action of player
 	auto moveby = MoveBy::create(0.6, Vec2(0, 200));
@@ -99,33 +99,37 @@ void MainScene::playerMove(float dt)
 
 void MainScene::starArise(float dt)
 {
-	star = Sprite::create("star.png");
-	const auto pos_x = random()%1280;
-	const auto pos_y = random() % 268+256;
-	star->setVisible(true);
-	star->setPosition(Vec2(pos_x,pos_y));
-	this->addChild(star);
-	auto fadeout = FadeOut::create(5);
-	star->runAction(fadeout);
+	if (!star->getOpacity())
+	{
+		star->setOpacity(255);
+		const auto pos_x = random() % 1280;
+		const auto pos_y = random() % 268 + 256;
+		star->setPosition(Vec2(pos_x, pos_y));
+		auto fadeout = FadeOut::create(5);
+		star->runAction(fadeout);
+	}
 }
 
 void MainScene::detectScore(float dt)
 {
-	if (star != nullptr&&star->isVisible()) {
-		if (player->getBoundingBox().intersectsRect(star->getBoundingBox()))
-		{
-			AudioEngine::play2d("audio/score.mp3",false);
-			auto scoringLabel = Label::createWithBMFont("mikado_outline_shadow.fnt","+1");
-			scoringLabel->setPosition(star->getPosition());
-			this->addChild(scoringLabel);
-			auto sequence = Sequence::create(DelayTime::create(0.5),CallFuncN::create(CC_CALLBACK_1(MainScene::removeScoringLabel,this)),nullptr);
-			scoringLabel->runAction(sequence);
-			star->stopAllActions();
-			star->setVisible(false);
-			score += 100;
-		}
+	if (player->getBoundingBox().intersectsRect(star->getBoundingBox()))
+	{
+		AudioEngine::play2d("audio/score.mp3", false);
+		auto scoringLabel = Label::createWithBMFont("mikado_outline_shadow.fnt", "+1");
+		scoringLabel->setPosition(star->getPosition());
+		this->addChild(scoringLabel);
+		score += 100;
+		auto sequence = Sequence::create(DelayTime::create(0.5), CallFuncN::create(CC_CALLBACK_1(MainScene::removeScoringLabel, this)), nullptr);
+		scoringLabel->runAction(sequence);
+		star->stopAllActions();
+		star->setOpacity(255);
+		const auto pos_x = random() % 1280;
+		const auto pos_y = random() % 268 + 256;
+		star->setPosition(Vec2(pos_x, pos_y));
+		auto fadeout = FadeOut::create(5);
+		star->runAction(fadeout);
 	}
-	std::string scoreString = "Score: ";
+	std::string scoreString = "Score:";
 	scoreString.append(std::to_string(score));
 	scoreLabel->setString(scoreString);
 }
